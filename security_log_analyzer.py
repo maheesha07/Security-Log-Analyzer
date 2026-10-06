@@ -1,5 +1,5 @@
 """
-Security Log Analyzer - Student Version
+Security Log Analyzer 
 
 A simple Python desktop application that reads security log files and finds
 basic suspicious activity such as failed logins and possible brute-force attacks.
@@ -8,18 +8,26 @@ Built with Tkinter, regular expressions and Matplotlib.
 """
 
 import csv
+import os
 import re
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
+from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+
+# Keep Matplotlib's cache inside the project so the app can run in restricted
+# Windows user profiles where AppData is not writable.
+MPL_CONFIG_DIR = Path(__file__).resolve().parent / ".matplotlib_cache"
+MPL_CONFIG_DIR.mkdir(exist_ok=True)
+os.environ.setdefault("MPLCONFIGDIR", str(MPL_CONFIG_DIR))
 
 import matplotlib.pyplot as plt
 
 
-# ----------------------------
+
 # Basic settings
-# ----------------------------
+
 BRUTE_FORCE_LIMIT = 5
 BRUTE_FORCE_MINUTES = 5
 
@@ -92,14 +100,6 @@ class SecurityLogAnalyzer:
             fg="#22d3ee",
             bg="#0f172a",
         ).pack(side="left", padx=25, pady=18)
-
-        tk.Label(
-            header,
-            text="Student SOC Tool",
-            font=("Arial", 10),
-            fg="#94a3b8",
-            bg="#0f172a",
-        ).pack(side="left", pady=25)
 
         # Buttons
         button_frame = tk.Frame(self.root, bg="#111827")
@@ -262,7 +262,7 @@ class SecurityLogAnalyzer:
 
         if path:
             self.file_path = path
-            self.file_label.config(text=path.split("/")[-1])
+            self.file_label.config(text=os.path.basename(path))
 
     def read_log_file(self):
         if not self.file_path:
